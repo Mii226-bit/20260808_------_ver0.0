@@ -16,6 +16,16 @@ boardData[3][3] = WHITE;
 boardData[3][4] = BLACK;
 boardData[4][3] = BLACK;
 boardData[4][4] = WHITE;
+const DIRECTIONS = [
+  [0, -1], //左
+  [-1, -1], //左上
+  [-1, 0], //上
+  [-1, 1], //右上
+  [0, 1], //右
+  [1, 1], //右下
+  [1, 0], //下
+  [1, -1], //左下
+];
 
 let currentPlayer = BLACK;
 // 盤面の要素を取得
@@ -31,27 +41,42 @@ for (let row = 0; row < BOARD_SIZE; row++) {
     cell.dataset.col = col;
 
     cell.addEventListener("click", () => {
-      console.log(`Clicked cell at row ${row}, col ${col}`);
-
-      if (boardData[row][col] === EMPTY) {
-        boardData[row][col] = currentPlayer;
-        renderBoard();
-
-        // 駒が置けたらプレイヤーを切り替える
-        if (currentPlayer === BLACK) {
-          currentPlayer = WHITE;
-        } else {
-          currentPlayer = BLACK;
-        }
-        console.log(
-          `Current player is now ${currentPlayer === BLACK ? "BLACK" : "WHITE"}`,
-        );
-      } else {
-        alert("そこには置けません。");
-      }
+      cellClick(row, col);
     });
     board.appendChild(cell);
   }
+}
+//クリック処理
+function cellClick(row, col) {
+  console.log(`Clicked cell at row ${row}, col ${col}`);
+
+  if (boardData[row][col] !== EMPTY) {
+    alert("そこには置けません。");
+    return;
+  }
+  if (!canFlip(row, col)) {
+    alert("そこには置けません。");
+    return;
+  }
+
+  alert("おけるわよ\nまだひっくり返らんけどな！わはは");
+
+  boardData[row][col] = currentPlayer;
+
+  renderBoard();
+
+  switchPlayer();
+}
+//プレイヤーを切り替える
+function switchPlayer() {
+  // 駒が置けたらプレイヤーを切り替える
+  if (currentPlayer === BLACK) {
+    currentPlayer = WHITE;
+  } else {
+    currentPlayer = BLACK;
+  }
+  alert(`${currentPlayer === BLACK ? "黒" : "白"}のターン！`);
+  console.log(`${currentPlayer === BLACK ? "黒" : "白"}のターン！`);
 }
 
 //cells:マス目の要素を取得してvalueに格納
@@ -85,6 +110,47 @@ function renderBoard() {
   });
 }
 
-function cellClick() {}
+function canFlip(row, col) {
+  const opponentPlayer = currentPlayer === BLACK ? WHITE : BLACK;
+  for (let i = 0; i < DIRECTIONS.length; i++) {
+    const rowDIRECTIONS = DIRECTIONS[i][0];
+    const colDIRECTIONS = DIRECTIONS[i][1];
+
+    let checkRow = row + rowDIRECTIONS;
+    let checkCol = col + colDIRECTIONS;
+
+    if (
+      checkRow < 0 ||
+      checkRow >= BOARD_SIZE ||
+      checkCol < 0 ||
+      checkCol >= BOARD_SIZE ||
+      boardData[checkRow][checkCol] !== opponentPlayer
+    ) {
+      continue;
+    }
+
+    //隣は相手の駒だったのでその先を調べる
+    checkRow += rowDIRECTIONS;
+    checkCol += colDIRECTIONS;
+
+    while (
+      checkRow >= 0 &&
+      checkRow < BOARD_SIZE &&
+      checkCol >= 0 &&
+      checkCol < BOARD_SIZE
+    ) {
+      if (boardData[checkRow][checkCol] === EMPTY) {
+        break;
+      }
+      if (boardData[checkRow][checkCol] === currentPlayer) {
+        return true;
+      }
+      checkRow = +rowDIRECTIONS;
+      checkCol = +colDIRECTIONS;
+    }
+  }
+  return false;
+}
+
 //初期状態の盤面を描画
 renderBoard();
