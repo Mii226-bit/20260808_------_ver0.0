@@ -50,12 +50,8 @@ for (let row = 0; row < BOARD_SIZE; row++) {
 function cellClick(row, col) {
   console.log(`Clicked cell at row ${row}, col ${col}`);
 
-  if (boardData[row][col] !== EMPTY) {
-    alert("そこには置けません。");
-    return;
-  }
-  if (!canFlip(row, col)) {
-    alert("そこには置けません。");
+  if (boardData[row][col] !== EMPTY || !canFlip(row, col)) {
+    alert("そこには置けないにょ～ん（笑）\n画面ちゃんと見てね\nぷ\nぷ\nぷ");
     return;
   }
 
@@ -75,7 +71,7 @@ function switchPlayer() {
   } else {
     currentPlayer = BLACK;
   }
-  alert(`${currentPlayer === BLACK ? "黒" : "白"}のターン！`);
+  alert(`${currentPlayer === BLACK ? "黒" : "白"}のターンですわよ`);
   console.log(`${currentPlayer === BLACK ? "黒" : "白"}のターン！`);
 }
 
@@ -152,5 +148,47 @@ function canFlip(row, col) {
   return false;
 }
 
+function fripPieces(row, col) {
+  const opponentPlayer = currentPlayer === BLACK ? WHITE : BLACK;
+
+  for (let i = 0; i < DIRECTIONS.length; i++) {
+    const rowDirection = DIRECTIONS[i][0];
+    const colDirection = DIRECTIONS[i][1];
+
+    const flipList = [];
+
+    let checkRow = row + rowDirection;
+    let checkCol = col + colDirection;
+    if (
+      checkRow < 0 ||
+      checkRow >= BOARD_SIZE ||
+      checkCol < 0 ||
+      checkCol >= BOARD_SIZE ||
+      boardData[checkRow][checkCol] !== opponentPlayer
+    ) {
+      continue;
+    }
+
+    //隣は相手の駒だったのでその先を調べる
+    checkRow += rowDIRECTION;
+    checkCol += colDIRECTION;
+
+    while (
+      checkRow >= 0 &&
+      checkRow < BOARD_SIZE &&
+      checkCol >= 0 &&
+      checkCol < BOARD_SIZE
+    ) {
+      if (boardData[checkRow][checkCol] === EMPTY) {
+        break;
+      }
+      if (boardData[checkRow][checkCol] === currentPlayer) {
+        return true;
+      }
+      checkRow += rowDIRECTION;
+      checkCol += colDIRECTION;
+    }
+  }
+}
 //初期状態の盤面を描画
 renderBoard();
