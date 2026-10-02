@@ -113,11 +113,11 @@ function renderBoard() {
 function canFlip(row, col) {
   const opponentPlayer = currentPlayer === BLACK ? WHITE : BLACK;
   for (let i = 0; i < DIRECTIONS.length; i++) {
-    const rowDIRECTIONS = DIRECTIONS[i][0];
-    const colDIRECTIONS = DIRECTIONS[i][1];
+    const rowDIRECTION = DIRECTIONS[i][0];
+    const colDIRECTION = DIRECTIONS[i][1];
 
-    let checkRow = row + rowDIRECTIONS;
-    let checkCol = col + colDIRECTIONS;
+    let checkRow = row + rowDIRECTION;
+    let checkCol = col + colDIRECTION;
 
     if (
       checkRow < 0 ||
@@ -130,8 +130,8 @@ function canFlip(row, col) {
     }
 
     //隣は相手の駒だったのでその先を調べる
-    checkRow += rowDIRECTIONS;
-    checkCol += colDIRECTIONS;
+    checkRow += rowDIRECTION;
+    checkCol += colDIRECTION;
 
     while (
       checkRow >= 0 &&
@@ -145,8 +145,8 @@ function canFlip(row, col) {
       if (boardData[checkRow][checkCol] === currentPlayer) {
         return true;
       }
-      checkRow = +rowDIRECTIONS;
-      checkCol = +colDIRECTIONS;
+      checkRow += rowDIRECTION;
+      checkCol += colDIRECTION;
     }
   }
   return false;
